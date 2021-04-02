@@ -1,6 +1,25 @@
 import "./style/main.css";
 import * as THREE from "three";
 import gsap from "gsap";
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+
+
+// Cursor
+
+const cursor = {
+  x: 0,
+  y: 0
+}
+
+const canvas = document.querySelector(".webgl");
+
+// const cameraMove = (e) => {
+//   cursor.x = e.clientX / sizes.width - 0.5;
+//   cursor.y = -(e.clientY / sizes.height - 0.5);
+
+//   console.log(cursor.x)
+// }
+// window.addEventListener('mousemove', cameraMove)
 
 /**
  * Sizes
@@ -38,6 +57,10 @@ const camera = new THREE.PerspectiveCamera(
 camera.position.z = 3;
 scene.add(camera);
 
+// Controls
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
 const cubes = new THREE.Group();
 
 // Test
@@ -66,9 +89,10 @@ cubes.add(cube4);
 scene.add(cubes);
 
 
+
 // Renderer
 const renderer = new THREE.WebGLRenderer({
-  canvas: document.querySelector(".webgl"),
+  canvas
 });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(sizes.width, sizes.height);
@@ -95,8 +119,16 @@ const loop = () => {
   cube4.rotation.y = Math.sin(elapsedTime);
   cube4.rotation.z = Math.sin(elapsedTime);
 
-//   camera.lookAt(cubes.position);
 
+
+  // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
+  // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
+  // camera.position.y = cursor.y * 5;
+  // camera.lookAt(cubes.position);
+
+  // Update controls
+  controls.update();
+  
   // Render
   renderer.render(scene, camera);
 
