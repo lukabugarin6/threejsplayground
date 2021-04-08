@@ -1,8 +1,32 @@
 import "./style/main.css";
 import * as THREE from "three";
-import gsap from "gsap";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import gsap from "gsap";
+import * as dat from 'dat.gui';
 
+// Debug
+
+const gui = new dat.GUI();
+
+const parameters = {
+  color: 0xffff00,
+  spin: () => {
+    gsap.to(cube.rotation, {
+      duration: 1,
+      y: cube.rotation.y + 10
+    })
+  }
+}
+
+gui
+    .addColor(parameters,'color')
+    .onChange(() => 
+    {
+      material.color.set(parameters.color)
+    })
+
+gui
+    .add(parameters, 'spin')
 
 // Cursor
 
@@ -38,8 +62,11 @@ window.addEventListener("resize", () => {
   camera.updateProjectionMatrix();
 
   // Update renderer
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(sizes.width, sizes.height);
 });
+
+
 
 /**
  * Environnements
@@ -54,6 +81,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   100
 );
+
 camera.position.z = 3;
 scene.add(camera);
 
@@ -61,40 +89,34 @@ scene.add(camera);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 
-const cubes = new THREE.Group();
+const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
 
-// Test
-const cube = new THREE.Mesh(
-  new THREE.BoxBufferGeometry(1, 1, 1),
-  new THREE.MeshNormalMaterial()
-);
-const cube2 = new THREE.Mesh(
-  new THREE.BoxBufferGeometry(1, 1, 1),
-  new THREE.MeshNormalMaterial()
-);
-const cube3 = new THREE.Mesh(
-  new THREE.BoxBufferGeometry(1, 1, 1),
-  new THREE.MeshNormalMaterial()
-);
-const cube4 = new THREE.Mesh(
-  new THREE.BoxBufferGeometry(1, 1, 1),
-  new THREE.MeshNormalMaterial()
-);
+const material = new THREE.MeshBasicMaterial({color: parameters.color})
 
-cubes.add(cube);
-cubes.add(cube2);
-cubes.add(cube3);
-cubes.add(cube4);
+// Object
+const cube = new THREE.Mesh(geometry,material);
 
-scene.add(cubes);
+scene.add(cube);
 
+gui
+    .add(cube.position, 'y')
+    .min(-3)
+    .max(3)
+    .step(0.01)
+    .name('elevation');
+
+gui 
+    .add(cube,'visible')
+
+gui
+    .add(material,'wireframe')
 
 
 // Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas
 });
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(sizes.width, sizes.height);
 
 // Clock
@@ -112,14 +134,7 @@ const loop = () => {
   const elapsedTime = clock.getElapsedTime();
 
   // Update
-  cube.rotation.y = Math.sin(elapsedTime);
-  cube2.rotation.x = Math.sin(elapsedTime);
-  cube3.rotation.x = Math.sin(elapsedTime);
-  cube3.rotation.z = Math.sin(elapsedTime);
-  cube4.rotation.y = Math.sin(elapsedTime);
-  cube4.rotation.z = Math.sin(elapsedTime);
-
-
+  // cube.rotation.y = Math.sin(elapsedTime);
 
   // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3;
   // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3;
