@@ -1,6 +1,6 @@
 import './style/main.css'
 import * as THREE from 'three'
-
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 
 // Canvas
 const canvas = document.querySelector('.webgl');
@@ -38,6 +38,10 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 
 camera.position.z = 3
 scene.add(camera)
 
+// Controls
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
 // Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas
@@ -50,6 +54,8 @@ renderer.setSize(sizes.width, sizes.height)
  */
 const loop = () =>
 {
+
+    controls.update();
 
     // Render
     renderer.render(scene, camera)
